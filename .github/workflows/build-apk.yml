@@ -1,41 +1,57 @@
-- name: Setup Node.js
-  uses: actions/setup-node@v4
-  with:
-    node-version: 22
+name: Build APK
 
-- name: Setup Java 21
-  uses: actions/setup-java@v4
-  with:
-    distribution: temurin
-    java-version: 21
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
-- name: Create Capacitor project
-  run: |
-    mkdir app
-    cd app
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    npm init -y
-    npm install @capacitor/core @capacitor/cli @capacitor/android
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    mkdir -p www
-    cp -R ../web/. www/
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-    npx cap init "دلتا رشيد" "com.eldelta.rashid" --web-dir www
-    npx cap add android
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
 
-    cd android
+      - name: Create Capacitor project
+        run: |
+          mkdir app
+          cd app
 
-    sed -i 's/compileSdkVersion = .*/compileSdkVersion = 36/' variables.gradle || true
-    sed -i 's/targetSdkVersion = .*/targetSdkVersion = 36/' variables.gradle || true
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
 
-- name: Build APK
-  working-directory: app/android
-  run: |
-    chmod +x gradlew
-    ./gradlew assembleDebug
+          mkdir -p www
+          cp -R ../web/. www/
 
-- name: Upload APK
-  uses: actions/upload-artifact@v4
-  with:
-    name: Delta-Rashid-APK
-    path: app/android/app/build/outputs/apk/debug/app-debug.apk
+          npx cap init "دليل رشيد" "com.eldelta.rashid" --web-dir www
+          npx cap add android
+
+          cd android
+
+          sed -i 's/compileSdkVersion = .*/compileSdkVersion = 36/' variables.gradle || true
+          sed -i 's/targetSdkVersion = .*/targetSdkVersion = 36/' variables.gradle || true
+
+      - name: Build APK
+        working-directory: app/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Delta-Rashid-APK
+          path: app/android/app/build/outputs/apk/debug/app-debug.apk
