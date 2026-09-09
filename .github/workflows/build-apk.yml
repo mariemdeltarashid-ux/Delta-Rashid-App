@@ -20,7 +20,7 @@
     mkdir -p www
     cp -R ../web/. www/
 
-    npx cap init "دليل رشيد" "com.eldelta.rashid" --web-dir www
+    npx cap init "دلتا رشيد" "com.eldelta.rashid" --web-dir www
     npx cap add android
 
     cd android
